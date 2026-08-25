@@ -13,3 +13,11 @@ wheels/
 
 # additional data
 soundData/dev_data_ToyCar.zip
+
+
+
+# additional data
+
+fromEsaki/20260915_異常検知_滋賀大江崎.pptx
+fromEsaki/音の異常検知_kNN_OneClassSVM.ipynb
+fromEsaki/画像の異常検知_kNN_OneClassSVM.ipynb
