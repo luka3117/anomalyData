@@ -36,10 +36,12 @@
 
         uv run show_mel_spectrogram.py soundData/ToyCar/test/normal_id_04_00000000.wav         
 
--  fig result 
-        
-        ./soundData/ToyCar/test/normal_id_04_00000000.png
-        ./soundData/ToyCar/test/anomaly_id_04_00000000.png
+- fig result 
+
+
+- [normal](./soundData/ToyCar/test/normal_id_04_00000000.png)
+
+- [anomaly](./soundData/ToyCar/test/anomaly_id_04_00000000.png)
 
 
 # pure sine wave [note viz](./pure_notes_mel_spectrogram.py)
