@@ -40,3 +40,11 @@
         
         ./soundData/ToyCar/test/normal_id_04_00000000.png
         ./soundData/ToyCar/test/anomaly_id_04_00000000.png
+
+
+# pure sine wave [note viz](./pure_notes_mel_spectrogram.py)
+
+- [C, G png](./mel_C4_G4.png)
+
+        uv run python pure_notes_mel_spectrogram.py C4 G4
+
