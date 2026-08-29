@@ -1,0 +1,1650 @@
+Hey everyone. Today we are going to look
+at intro to audio processing or more
+specifically how we work with audio to
+train neural networks. We're not going
+to look at neural networks today. We're
+mostly going to look at that
+pre-processing step of how do we get
+audio ready to actually pass it into a
+neural architecture. Working with audio
+is quite a bit different from working
+with images or text. So that's why I
+want to make this video. And also we're
+going to just look at a high level how
+to use the torch audio package and how
+the different methods are related to
+each other. In future videos we'll go in
+and actually look at some of the theory
+and implement these u methods from
+scratch. So today is mostly just a use
+case a practical use case of what's
+going on. So let's go ahead. Of course
+if we're going to be working with audio
+we need some audio to work with. So
+let's do that. Uh numpy as np import
+mapplot live.py pie plot as PLT and
+there's going to be a lot of copy
+pasting today because I mostly want to
+show visuals and y'all don't need to see
+me uh write code of making different
+visuals but our main goal is to
+understand the torch audio package at
+least some of the main uh methods that
+exist in it for us to um use in the
+future. So we're going to import torch
+audio.transforms
+sd. This is just like your torch
+vision.transforms but it's for audio and
+then import i python.d display. Um, and
+we're going to do from
+ipython display import audio. And
+that'll let us actually visualize um or
+play back one of the audio files. And so
+I already have an audio file in here um
+that I' that I've gone ahead and saved.
+So we're just going to take a look at
+that. And so our audio file is going to
+be for some audio
+um and it's going to return both the
+audio and the sampling rate. And that's
+going to be torch torch audio.load. And
+we're going to go ahead and load our
+sample audio. flack. There we go. So,
+that's going to be our audio file. And
+the audio file will sound like this.
+Audio. We want to play back this audio.
+And the rate is going to be the sampling
+rate.
+And it should sound something like a
+distinct promise of 100 pounds was made
+to him if he would have the child ready
+to hand over, right? Just some standard
+speech audio file. So, first of all, if
+you've never heard of this term sampling
+rate before, the sampling rate is how
+many samples per second does your
+microphone capture. basically how many
+numbers are we using to represent the
+audio. So in this case if we look at
+audio audio is basically just a list of
+numbers. It's a it's a number that
+changes over time. So it's kind of like
+a time series uh data set. And the
+sampling rate is how many samples do I
+have in every second of audio. So I have
+about 8 seconds worth of audio here. And
+the sampling rate of this file
+specifically is 16,000. So, the sampling
+rate depends on the sensor or the
+microphone you're using to capture the
+audio. Higher quality microphones will
+have higher sampling rates because
+they're able to capture um more
+information in every second of audio.
+Now, the sampling rate is important and
+we'll talk about it later, but for now
+um for most neural architectures, we use
+about 16,000 uh seems to be the standard
+sampling rate for most architectures out
+there. more modern ones and bigger
+models might use a slightly higher one
+like 20,000, 22,000, 24,000. Um, and
+we'll talk about why that's important in
+a bit. And so that's our sampling rate.
+Now, typically when you look at audio,
+um, you see it in this form, plt.plot
+audio, and this will go ahead and create
+a nice little, um, plot. Oh, yes, I
+remember. So our audioshape
+notice there's it's a one by something.
+So plot's just trying to plot everything
+individually. That's unne unneeded. Um
+so we can do audios squeeze. And now
+this should work out fine. There we go.
+So this is our plot of a waveform over
+time. Right? So it's it's basically
+sound pressure over time. That's what
+the that's what the microphones capture.
+Um and this is a standard figure you'll
+see when working with any kind of audio
+file. And this is known as the time
+domain of our signal because it's some
+value that's varying over time. Right?
+This is the time axis and this is
+basically our air pressure, right? The
+amount of air pressure axis.
+Now, this is a totally fine view of our
+audio, but typically this isn't the most
+helpful. Sometimes we're interested in
+the frequencies available inside an
+audio file. What do I mean by that? If
+you have taken a signal processing class
+before, you will have heard of the 4year
+transform. If you've never heard of this
+before, go ahead and watch the three
+blue one brown video. It will visualize
+it way better than I could ever write
+it. But the main idea is you want to
+find out what are the frequencies that
+exist inside this um audio file. And
+we're going to take a look at a couple
+of easy examples. The way I like to
+think about it is light um light is a
+frequency. Different colors of lights
+have different frequencies. So if you
+take red light and you take uh blue
+light and you take green light, every
+single light has a different frequency.
+Now if I take two different um colors
+like blue and yellow and mix them
+together and get green, I can see that I
+have green light. But if I want to undo
+it and figure out what are the different
+colors that went into it, that's finding
+the individual frequencies that when
+mixed together create that green light.
+And so a 4year transform goes in the
+opposite direction. It will take my
+green paint and undo it figuring out
+what are the individual frequencies
+found inside that green paint. In this
+case, blue and yellow. And so this is
+done by basically um multiplying your
+signal by some complex exponential. I'm
+not going to go into any of the main
+ideas here, but it gives you a complex
+number that essentially represents the
+amount of energy at different
+frequencies, K. So let's go ahead and
+see what that looks like in in practice.
+So let's first talk about frequency. You
+have heard of frequency before because
+this is something you'll see in standard
+um you know calculus or pre-calculus
+courses or trigonometry course. What we
+have here is a sinosoid at different
+frequencies. So we have a one hertz
+signal and so that means we have one
+cycle per second. That's going to be in
+one second of audio we have one complete
+cycle as you can see with the blue line.
+Similarly if we have four hertz that
+means four cycles per second. So that
+means we have four complete cycles in 1
+second. That's the orange line. And
+similarly again the green would be
+eight. Now one thing I want to mention
+is this hertz cycles per second is
+different from this sampling rate which
+is samples per second. samples per
+second is how many samples or numbers
+were captured to, you know, produce this
+line. In this case, I have 1,000
+numbers, 1,00 samples between 0 and one.
+So, I have 1,000 samples for 1 second.
+So, this would be a 1,00 samples per
+second um audio file. That's my sampling
+rate. On the other hand, we have one
+hertz. That's the cycle. So, the cycle
+cycles per second is about what's being
+captured. a low cycles per second is low
+frequency audio. So that's like very low
+pitched audio. And then you have um high
+frequency audio. That would be much
+higher frequency audio, right? Higher
+frequency audio. And so that's the way
+to think about there. There's two
+different frequencies going on. There is
+a relationship between them called the
+Nyquis rate that we'll talk about in
+just a bit. But just keep that in mind
+so you don't get them confused. So we
+have here cycles per second. And our
+goal is to be able to identify what is
+the frequency the cycles per second of a
+sinosoid. And the foryear transform
+provides that to us. And so let's go
+ahead and see what that looks like. Um
+again, lot of copy pasting here, but
+let's just go ahead and add you in first
+and then we'll do the rest of it. So
+what I've done is created uh 10 1,000
+points between 0 and one. So that's t,
+right? Right, we have 1,000 points here
+between time zero all the way up to uh
+non-inclusive time 1. So there we go.
+And what I'm saying is I want a sinosoid
+with a frequency of 20. Okay, no
+problem. We can do y is equal to np
+sign. And this is your standard sinosoid
+formula. 2 * pi np.pi
+times your frequency that you want times
+the time. Right? This is your standard
+formula. So if you do plt.plot plot y,
+you'll end up seeing in 1,000 samples,
+we have 20 um 20 basically 20
+repetitions, right? 20 full cycles
+happening. And here it is in the
+sampling rate view, right? We have 1,000
+samples or we can do it in the time
+view. And that's going to be if we do t,
+y, that's going to be in 1 second, we
+have 20 different cycles happening. So
+just some things to keep in mind. And
+our goal is to find out what is the uh
+4year transform of this and what does
+the 4year transform provide us? What
+kind of information do we learn from it?
+So if we do y fft, it's going to be np.
+FFT. FFT. So this is the standard numpy
+fast 4year transform that we can look
+at. So FFT and we're going to take the
+4year transform of Y. And when we look
+at Y FFT, what we see is we get a bunch
+of these complex numbers. And what do I
+mean by complex numbers? Well, it has a
+real term. So you can see it's 1.2 e to
+the4. So basically zero plus a complex
+term, right? Because you can see there's
+this j attached there. So these are your
+standard complex numbers in the form of
+a plus uh bj, right? So complex numbers.
+And this provides us how much energy and
+the phase. So there's a magnitude and a
+phase component which we'll talk about
+in a bit. But just for now, it's
+essentially how much energy is available
+at this frequency component. How much
+energy is in this frequency component?
+How much energy is in this frequency
+component? And the question you may be
+asking is, well, these are energies, but
+what frequencies do they represent? So,
+what is the frequency of this one? What
+is the frequency of this one? Dot dot
+dot. And so, we can easily compute that
+or we can just use one of the built-in
+functions from from numpy freaks
+frequencies is going to be np. FFT. FFT
+and it's going to be and this is going
+to be FFT frequency. And all it needs is
+to know uh what is the uh how many
+samples do we have in our um thing. And
+then we can say d equals the the time
+between samples. It's just going to be
+uh how much time at t1 minus t0. And we
+know that there's 8,000 samples. So this
+would be 1 over 1,000, right? The
+distance between the two. So we could
+have also done that.
+Yeah, there we go. So these are my
+frequencies. I have frequency zero. So
+basically zero cycles per second, one
+cycle per second, two cycles per second,
+three cycle per second, dot dot dot. And
+we know our signal, the original signal
+that we applied the FFT to has 20 cycles
+per second. So we're expecting something
+special to happen here. And so we'll see
+that in just a bit. And so these are my
+frequencies.
+You can also see we have both positive
+frequencies. We also have these negative
+frequencies, right?
+96, 97, -20, dot dot dot. And negative
+frequencies are not all that interesting
+to us. So we'll see what that looks like
+in just a bit.
+And so um actually we can let's just go
+ahead and plot it. PLT.plot. If we plot
+our let's just go ahead. So um let's
+just look at it right here. We have here
+um our complex numbers, right? Each
+complex exponential is just it creates a
+complex number of a plus jb. And this
+complex value has two things. It has a
+magnitude and a phase. And the magnitude
+is what we really care about. It's the
+energy at which uh the amount of energy
+at that specific uh frequency. But the
+phase is basically what we have right
+here, right? The the the angle itself.
+Um so every complex number always has a
+magnitude component and a phase
+component. um we don't really care about
+the phase um all that much right now,
+but it basically tells us the shift of
+that frequency component. So let's just
+take a look and see what it what it
+does. So if we do plt.plot and we plot
+our on our x-axis let's plot our
+frequencies. So freaks
+and on our yaxis let's plot our um
+actual um values the complex values but
+we can't plot a complex value. So we can
+plot the absolute value of it. This will
+provide automatically the magnitude. So
+if you doabs
+on complex numbers and numpy, it'll
+basically go ahead and do this. If you
+did angle, it would provide you the
+phase, but that's fine. Um,
+oh, right,
+not abs. NP.ABS. There we go.
+Right. So, we can see that we have all
+of these frequencies available to us. We
+can see it kind of goes from 500 to
+500ish and we have these two peaks,
+right? A spike here and a spike here.
+The thing is that we don't really care
+about negative frequencies. It's just
+that when we produ when we do the
+foryear transform, every positive
+frequency from our complex numbers,
+every positive frequency identified also
+has its negative complex conjugate.
+Right? That's just the way that foyer
+transforms work. Everything comes in
+pairs. There's a complex conjugate. we
+just don't care about the negative side.
+So, we can just ignore them, right?
+Let's just ignore them. So, we only want
+the frequencies that are the positive
+ones. So, let's go ahead and change that
+to only show the positive ones. So, that
+would be um
+it'll be from
+let's just index them. It'll start in
+the middle. So, we basically need to
+start from the middle. So, that's going
+to be the len of frequencies divided by
+two. And then similarly, it's going to
+be the uh len of frequencies divided by
+two. And so now we have our only the
+positive section, the positive
+frequencies. And notice that we have a
+spike at about 20 hertz, right? And we
+have no other energy at any other cycles
+per second. And that's because the
+signal we applied this 4year transform
+to was a 20 hertz signal, 20 samples per
+second. And so we're able to identify
+what is the overall frequency of this
+specific signal. And which is pretty
+neat, right? We're able to kind of
+extract that information. And so now
+that we have that, there is one
+limitation. And this is what I'm talking
+about. The relationship between the
+sampling rate, the samples per second
+that your microphone captures and your
+signal rate, the cycles per second,
+right? The frequencies that the
+microphone is capturing. And the main
+idea is that if your samples per second
+is let's say 1,000 like we've had it up
+till now. So your microphone is
+capturing 1,000 numbers every second.
+The maximum number of cycles per second
+that your audio can represent is only
+500. So it's always half. So your
+frequency of a signal is always
+represented. The max that it can
+represent is half the sampling rate. And
+so this is helpful but it does lead to
+some issues. So the reason this matters
+first of all is that your human uh human
+hearing can hear up to about 20,000ish
+hertz. Right? So 20,000 cycles per
+second is the highest pitch that we can
+understand. This means that our audio
+files need to be at least 40,000 samples
+per second, right? Samples per second.
+So, our microphones need to be able to
+capture 40,000 samples every second to
+contain all of that information. Because
+if our microphone's capturing 40,000
+samples per second, then the highest
+frequency that that microphone can
+represent that that audio can represent
+would be 20,000 samples per sec uh
+20,000 cycles per second because that's
+half. So, that's the important part.
+Now, that is a theoretical limit because
+it's never perfect. So if we have 40,000
+samples per second, we can technically
+represent up to 20,000 cycles per
+second, but it's not perfect. So that's
+why typically you'll see 44,100
+samples per second um in high quality
+microphones, right? That that's kind of
+why because it gives you a little bit of
+buffer room over the kind of the perfect
+Nyquis rate. And so now that we have all
+of this, we can go ahead and take a look
+at a common problem known as aliasing.
+So aliasing happens when we downsample
+audio. And this happens all the time
+when you're working with um data. For
+example, let's say that you are working
+with um some audio that has high
+frequency information. Let's say the
+audio has um and let's go ahead and
+write it out so it makes sense. Let's
+say you're working with audio that has
+um 10,000
+uh and it's going to be cycle per
+second. So, this is my high frequency
+information.
+And let's say I captured it pretty well
+at uh let's say I was recording with
+24,000
+um 24,000
+sample
+per second. So, if I'm capturing at
+24,000 samples per second by the Nyquist
+rule, right, Nyquist,
+I will be able to represent up to 12,000
+cycle
+per second. So, that's good, right? I'm
+able to represent um up to 12,000, which
+is no problem because if the max, right,
+if I know the maximum is 10,000, no big
+deal. We are able to capture all of that
+audio information, all of that frequency
+information with this sampling rate. So,
+we're good to go. Now, what I said was
+that neural networks are typically
+trained on 16,000 samples per second,
+right? Like wave tovec will be one of
+the architectures we look at. It's
+trained on 16,000 samples per second,
+which means we need to do a down
+sampling, right? Down sample. And this
+down sample is the same as if you start
+with an image, right? So if you've
+worked with images, um let's say you
+start with uh imageet images that are
+256x 256. That's an imageet image. And
+then but we know our neural network
+takes 224 x 224. 224x
+224. we end up losing a little bit of
+resolution because we're downsampling
+the image. Um, downsampling in an image
+has the exact same Nyquis properties,
+but we don't really think about it u
+when we do it in images as much. But we
+have the same problem here in audio.
+We're going to take this 24,000 samples
+per second, and we're going to end up um
+taking the and we're going to downsample
+it to 16,000 uh 16,000 samples
+per second.
+But now if we do Nyquist again, Nyquist,
+this the maximum thing that my 16,000
+samples per second can represent would
+be 8,000
+8,000 cycles per second.
+And we have a problem because in my
+original audio of 24,000 samples per
+second with my 12,000 max, I was covered
+because I know 10,000 was the most in my
+data. But now that I've downsampled my
+audio from 24,000 to 16,000, the max I
+can represent is 8,000, which is
+underneath the 10,000 that I need. So
+this 10,000 basically all the frequency
+information, all the frequency
+information between 8,000 to 10,000
+hertz that was in my original audio will
+get aliased. Aliased.
+And so you end up losing that frequency
+information because your signal just
+can't contain it anymore. So it has to
+go somewhere and so it gets aliased
+down. And so let's go ahead and take a
+look at what that looks like.
+Um so what we're going to do is we're
+going to create a audio file or
+basically a sinosoid just like we did
+before.
+And what we have here is a and this
+would be 200. We have a 200 samples per
+second audio. Right? Right? So if it's
+200 samples per second, I know the
+maximum thing I can represent is 100
+cycles per second. So I know it's 100,
+but I pick 40. So 40 is under 100. So
+we're good to go. So I go ahead and
+create that sinosoid. And what we're
+going to do is just apply the forer
+transform to it just like we did
+earlier. Nothing new. So we're going to
+go ahead and provide the forer
+transform. Same everything same as
+before. Nothing new. And now what we're
+going to do is down sample the audio.
+Right? We're going to down sample. So
+we're going to do a down samp down down
+sample factor. It's going to be let's
+say a factor of four. Yeah, let's do a
+factor of four. So that means we're
+going to go from 200 hertz down sampled
+by a factor of four. So it' be 50 Hz. So
+we have 50 samples per second. But if we
+have only 50 samples per second, so this
+is going to be 50 sample per second.
+Which means that the maximum cycles per
+second that I can represent is half.
+That'd be 25 cycle per second.
+The problem is 25 cycles per second is
+less than the 40 that I have in my
+original audio, right? The original
+signal. So let's see what happens to
+that. So what we're going to do is
+downsample our audio. That's just going
+to be um t low is going to be equal to
+t high. So we're going to down sample
+both my uh time. So we're going to take
+every other time step and our data
+itself
+t high and we're going to do down sample
+factor. Right? We're going to skip every
+step. And then similarly we're going to
+do y low is going to be and this is why
+basically low is down sample. It's just
+going to be the y high again
+down sample factor. Right? So I've gone
+ahead and downsampled everything by a
+factor of four. And then just like
+before, we're going to go ahead and
+apply our foryear transform to the down
+sample data. Right? So go ahead and
+apply the for transform, get the
+frequencies of the down sample data. So
+there we go. And now let's go ahead and
+plot it. So again, I'm not going to make
+you watch me create some plotting
+functions. So here's my original signal
+I had. Um, and this shouldn't be 80
+hertz. This should be 40 Hz. My bad.
+There we go. 40 Hz. So I have 40 cycles
+happening in 1 second. But because I
+downsampled my signal by a factor of
+four, now you can see we have 1 2 3 4 5
+6 7 8 9 10. 10 cycles happening in the
+same amount of time because we've
+downsampled directly by a factor of
+four. And here's the aliasing effect. I
+had a signal that originally had energy
+at 40 hertz. Now that my down sample
+signal can no longer represent that
+information, it gets aliased down. So we
+can only rep that 40 Hz frequency gets
+aliased down to here instead. And so
+this is you losing that frequency
+information. And why it's really
+important to keep in mind what are the
+general frequencies that your audio is
+working that your audio contains and
+make sure that when you do any kind of
+downsampling of your signal that you
+still maintain that information in
+there. So these are just kind of good
+ideas to keep in mind. Now what would be
+interesting here is what if we change
+our downsampling factor to two. If we
+change to two, that means we're going to
+go from 200 hertz, right? 200 samples
+per second. So if we do this to two,
+that means we'll only go down to 100
+samples per second, right? We're going
+to go from 200 down to 100 because we've
+only have which means the highest
+frequency cycles per second we can
+represent is half and that would be 50.
+Luckily for us, 50 is greater than the
+40 we were working with. So we should
+see no aliasing happening now. So let's
+see if that's true. And you can see
+exactly that we lose some energy like
+magnitude, but that same frequency is
+still represented. So we haven't aliased
+that information away.
+Right? All right. Cool. So that that is
+your main should be the main takeaway
+about aliasing. So let's just keep
+moving. Um, like I mentioned the at the
+beginning, the whole point of a for
+transform is to basically undo mixed
+paint, right? And so what happens if you
+take a couple of different signals with
+three different frequencies? So we have
+a sinosoid at five cycles per second, 20
+cycles per second, 40 cycles per second,
+and we just add those signals together
+and then do the 4year transform. Well,
+basically the same thing. Here's the sum
+of your sinosoids. And the forer
+transform is able to identify energy at
+5 Hz, energy at 20 Hz, energy at 40 Hz,
+right? So we're able to find those
+frequencies here. Um if we add another
+one, let's say we add one at 250, then
+we'll end up with kind of a signal that
+looks like this. But we have 5, 20, 40,
+and then here we go. We have one
+straight at 250. So the 4A transform
+again is able to identify the energy at
+the different frequencies available in
+our signal. And so that's that's the fun
+part. Now of course if we do a 4year
+transform and the 4year transform goes
+from the time domain signal where the
+x-axis is time to the frequency domain
+um which the x-axis is frequency. If we
+can go in one way, then we should be
+able to go the other way, right? The
+inverse transform. And this is as simple
+as just doing the inverse transform,
+which I can just go ahead again. Um,
+same code as before, adding together a
+bunch of sinosoids, do the 4year
+transform, but after you do the 4A
+transform, do the FFT, inverse forear
+transform. So, in the exact same way,
+here you go. You have a signal, you take
+its fouryear transform, and then you
+take its inverse for a transform. And
+these two signals should be identical to
+each other. And there we go.
+Now, here's the problem with a 4year
+transform. And let's kind of think about
+it this way. I'm going to apply the
+forer transform to our actual audio. So,
+if you remember up here, we had our
+audio file. This audio file contains
+lots of different frequencies, right?
+Lots of different frequencies. And so,
+what we want to do is apply the for
+transform to this and just see what that
+looks like. So, I called it audio. So,
+that's what we're going to do. All we
+want to do is basically this code right
+here.
+We're going to apply U
+to our audio instead. So instead of the
+sum of sinosoids, let's get rid of that.
+We're going to do it on our
+audio.
+And T,
+it's going to be len audio. And we know
+that our audio sampled at 16,000 samples
+per second. So the distance between time
+or the you know is going to be one over
+16,000.
+And so we end up with and let's change u
+to audio.
+And there won't be a t here. This will
+be range audio.
+Uh oh right. We have to do list
+range audio. Make sure it's an array.
+Only integers of a single element can be
+converted to an index
+here. Let's
+let's just do audio. Here we go. So we
+have our audio file just like that. This
+is our and this is no longer the sum of
+syosoid. So these uh titles no longer
+are correct. So let's get rid of that.
+There we go. So this is the audio file
+that we are working with. And here are
+all of the frequencies that are
+available in that audio file.
+But this view is not actually all that
+helpful to us. Like sure, we have the
+frequencies, but notice that audio
+files, unlike the signals we were
+working with here, because this signal
+here kind of repeats and it's, you know,
+it's very repetitive. It's it's
+periodic. The audio file, there's
+clearly some change happening over time.
+like in these areas like the you know
+empty areas we have low frequ like
+nothing's happening here so it's low
+frequency in these areas there's lots of
+change happening so this is a higher
+frequency and because there's kind of
+this mix of low and high frequencies and
+things are changing over time we lose
+that because in the regular 4year
+transform we go from the time domain
+squarely into the frequency domain like
+it's a full conversion to the frequency
+domain and the inverse for transform
+goes backwards but is there any kind
+middle ground that we can do where we
+have both time and frequency
+information. And yes, that's exactly
+what we're going to do. This is known as
+the spectrogram. And the spectrogram is
+known as the it's basically like a
+picture of the audio. And hopefully this
+will make sense. Before we do it in
+torch audio, we're going to go ahead and
+do it in um in scypi because scypi will
+provide again remember a 4year transform
+provides us both the scroll back up just
+to make sure it's a complex number
+returns a complex number which means we
+can get both the magnitude and the phase
+information. Both of that's available to
+us. It's just up till now like what
+we're looking at here all of this stuff
+is just the magnitude because typically
+we just care about the magnitude. about
+how much energy is there at the
+different frequencies.
+Either way, let's go ahead and take a
+look at what this produces
+when we apply the 4year transform. The
+short time for transform. So, the short
+time STF shorttime for transform
+produces something known as the
+spectrogram. And the spectrogram, we'll
+talk about um a couple things in just a
+bit, but it produces both the magnitude
+and the phase. But notice here that
+things are a little bit different where
+we have a time and a frequency axis,
+right? Time and a frequency axis.
+Whereas opposed to before we just had
+frequency or we just had time and we
+just had the magnitude along, you know,
+our our y-axis.
+And so because we have time and
+frequency axis, we can see both things
+at the same time. We can see along this
+time, you can see at the beginning part
+here. So, let's look at the original
+audio. At the beginning part here,
+there's basically no information, right?
+It's basically silent. Is that true? At
+this beginning part here, notice that
+there's no frequency information. Very
+low frequency down here. But then once
+talking actually begins, you can see a
+spike happen here and some speaking
+occurring. You can start to see some
+frequencies being represented. And
+honestly, what's more interesting is you
+can see the changes in the different
+frequencies. And what's extra cool is
+there's a clear relationship between the
+shapes of how these frequencies are
+changing. Right? You can see here
+there's a decrease. Here there's like an
+increase and a decrease. Here there's
+the different shapes of how these
+frequencies occur and the phone names or
+basically the phonetics of what's being
+said. So um once you get really good uh
+which I'm definitely not but once you
+get really good like my professor can
+look at this and give you an idea of
+what's actually being said from just the
+shapes of the frequencies which is
+really neat. Um and so this is our
+spectrogram magnitude but of course a
+4year transform whether or not it's a
+regular for transform short time for
+transform whatever it may be gives us
+two things. It gives us a magnitude plot
+we can produce a magnitude and we can
+produce the phase. It's just that as you
+can see here, the phase doesn't there's
+no discernable
+uh structure in this image here. It
+seems kind of like noise. I mean, it's
+not. The phase is important, but it
+doesn't really give us the information
+that we're looking for. And that's why
+typically when we're working with
+spectrograms, we only deal with the
+magnitude plot, the amount of energy at
+the different frequencies at the
+different times. And so that's the key
+takeaway. That's why I use Cypi here
+because in the torch audio they
+basically just return this magnitude
+spectrogram. They don't even return the
+uh phase but Cypi gives us both of them
+so we can take a look. Now what are the
+things that you have to think about when
+creating a spectrogram? There's two
+things. There is the
+number of samples per segment and then
+the number of overlap. So first of all
+in a spectrogram you have to it's still
+doing a 4-year transform. It's just
+doing it slightly differently. So if we
+look at this audio here, what it's doing
+is it's going to take a 4year transform
+of instead of the entire signal at once,
+it's going to take the 4year transform
+of small chunks of the signal at a time.
+And then for example, let's say we do a
+um let's say our number of uh our our
+length of the segment here it's 400.
+Let's say it was 20 or let's say it's
+20,000. That means I do the 4year
+transform of the first 20,000 samples
+only.
+And then we have number of overlap. So
+when we do the next chunk, if the
+overlap was zero, then we do a 4 year
+transform of 0 to 20,000, 20,000,
+40,000, 40,000, 60,000, 60,000, 80,000,
+dot dot dot. So we do a 4 year transform
+on these different chunks of the audio.
+And then we do a 4 year transform here
+and we'll produce some type of a regular
+for transform here. And this here
+becomes one of our columns of this.
+Basically, one of those bins. And we'll
+see what those bins look like in just a
+second. So, those are our bins.
+And the interesting part is as you um as
+you kind of reduce your trend, the the
+length of these windows that we use, you
+get different pieces of information. So,
+there is a little bit more uh nuance to
+this, like how do you window it? There's
+hamming windows, hanning windows, stuff
+like that. I'm not going to go into
+those details today. You can find those
+online and we'll look at them later when
+we implement the shorttime forear
+transform. But the main idea is we have
+some audio that we're applying some um
+forear transform to on different chunks
+of it. The other key idea is we don't
+just apply for transform to um different
+chunks, but rather we do them to
+slightly overlapping chunks and this is
+meant for two main reasons. First it
+gives a better representation u because
+of the windowing process because if we
+just apply a for transform to one chunk
+of an audio you'll have a abrupt start
+and an abrupt end. And this is why we'll
+use something like a hamming window to
+smooth it out. So I can pull a picture
+of that up. A hamming window looks kind
+of like this. Basically we take a
+signal,
+we take our signal that we're working
+with. we take the chunk that we have and
+we're going to multiply that chunk by
+this hamming window. So the start of the
+audio and the end of the audio is kind
+of dampened out. Um and so it leads to
+kind you know a bunch of cool properties
+like here we go. If you have this signal
+here and you apply this hamming window
+you end up with kind of a uh a decayed
+version of the signal kind of like this.
+And this allows us to get smoother
+properties uh smoother trans uh smoother
+calculations of the 4year transform. So
+that's one thing. But because we do
+that, we end up having to do an overlap
+add method. So when you do the inverse
+shorttime for a transform, it uses a
+method called overlap add. Um we're not
+again not going to go into too much of
+that today, but that requires some type
+of an overlap. So instead of just saying
+I want to do 0 to 20,000, 20,000 40,000,
+you might have an overlap of 10,000. So
+you'll do from 0 to 20,000. Then you'll
+do from 10,000 to 30,000. Then you'll do
+20,000 to 40,000. Then you'll do 30,000
+to 50,000. So you'll have a 10,000
+sample overlap between the different
+4year transforms you're doing. So that's
+neat. Now that we have that, let's go
+ahead and look at the time frequency
+relationship. What happens when I pick a
+very large um size for this? So let's go
+ahead and set it this way. Let's do our
+window size. Right now it's 400.
+And so this is going to be window size.
+And our overlap is typically half the
+size. So it doesn't have to be half, but
+half is what you typically use. So we're
+going to be doing half the window size
+will be the overlap. So we'll do window
+size divided by two. So this is what we
+had so far, right? 400. Let's see what
+happens when we increase it. Let's say
+we make it um 10,000.
+What do you notice here? We have very
+good frequency resolution. Notice h how
+many bins we go from zero to 8,000,
+right? Our frequency resolution is quite
+high, but it's kind of blurry. Like it's
+stretched out because our time
+resolution is pretty poor because each
+bin is so large that you can see that
+basically every bin takes up quite a
+large chunk of time. So you have poor
+time resolution because every window is
+10,000 long, but very very good
+frequency resolution, right? Very good
+fre because we can see all of the
+frequencies that are being represented
+because that's that's just how we're
+doing it. On the other hand, what
+happens if we pick a very small window
+size? Let's just say uh 16. We'll have
+exactly the opposite problem. We're
+going to have very good time resolution
+because every 4year transform we take is
+just on a tiny little section of audio.
+But because our for because we're doing
+4year transforms on such small segments,
+we get poor frequency resolution. You
+can count 1 2 3 4 5 6 7 eight bins,
+right? Because if you have 16 things, we
+only want the positive frequencies. That
+means we're going to end up with eight
+bins here. Eight frequency bins. And so
+this is your clear trade-off between
+your time and frequency resolution,
+right? So small frequent small window
+sizes lead to good time resolution but
+very poor frequency resolution because
+we lose that kind of the inner uh
+details of the frequency and then vice
+versa. Large window sizes lead to poor
+time resolution. So we kind of lose the
+um how things are changing over time but
+we get a very strong frequency
+resolution. And so this is the main
+thing to keep in mind when you're
+working with it. And so just picking a
+reasonable number here is often a little
+bit of a little bit of an art, but for
+the most part for at least speech and
+stuff like that, there's good defaults
+like 4 400 seems to work pretty well. So
+we're going to go with that here. Um, we
+could try something else. We could say
+like 1024. I'm not entirely sure. So
+this is what it looks like at 1024. You
+can see you get slightly better
+frequency resolution, right? we these
+these uh lines are more clearly marked
+out of how things are changing, but we
+have a little bit uh worse time
+resolution. So again, it's it's a little
+bit of a science, but there's good
+practices for most types of data that
+you're going to work out there on. So we
+are good to go. Now, we did this with
+the um with uh Scypi. Let's go ahead and
+just do it with torch audio so it's very
+clear. So in torch audio let's go ahead
+and set this up. So this is going to be
+a transform is going to be t dotsp
+spectrogram right t dotsp spectrogram
+and fft= 400 hop length is equal to 200
+right so that's that's the one that I um
+used earlier and we're going to do
+spectrogram is going to be transform
+audio we're going to take our audio
+apply that transform to it and let's go
+ahead and plot it and when we plot it
+you end up with something like this
+which obviously is not very helpful to
+look at like there's Not really a lot of
+information here and that's because
+we're looking at the raw amplitudes and
+it's very common to take the raw
+amplitude amplitudes here and scale it
+typically log scale it. So what we're
+going to do is convert it to decibb and
+so decibb very clear formula. We can
+just take the log of this thing and
+multiply it by 20 and we'd be good to
+go. But let's just go ahead and learn a
+couple of the transforms available to
+you. So that's going to be db transform
+is equal to t.amplitude
+to decibel. Right? It's another formula
+that or another method built right into
+torch audio. dbsp spec is going to be
+equal to db transform
+spec.
+And so again let's go ahead and just
+plot this out.
+Let's get rid of that. And now we get
+something that looked like what we had
+earlier, right? we have our actual
+decibel values here. Um, and just like
+before, if we change this to uh let's
+say 1024
+1024. So notice the uh frequency
+resolution. It's a little bit we have
+good time resolution, but frequency
+resolution we can see like we have a
+little bit of blurring I guess in along
+the frequency dimensions. So look how
+thick at these look how thick these
+bands are, these frequency bands. Um, if
+we change it, let's say 1024 and this
+will just be half. So 512
+and again do this. We end up getting
+slightly better frequency resolution but
+slightly worse time resolution. So what
+you use kind of depends on what you're
+trying to solve for and honestly what
+how much frequency information is in
+that data. But that's that's the main
+idea. Now let's talk about MEL
+spectrograms because spectrograms are
+useful and they're useful in basically
+any domain but most types of data has
+something special that we can do with
+it. and mouse spectrograms are closer to
+what the human ear perceives because
+it's an approximation of our auditory
+perception. So the reason is that our
+frequencies here are a linear scale,
+right? It's basically linear like you
+have zero frequency, 100, 200, 300, 400,
+500, whatever it may be. We have some
+linear scale here for the frequencies.
+But human hearing does not work
+linearly. So we need a better
+approximation of that. It's not that you
+couldn't use the spectrograms. is just
+male spectrograms are better built for
+human hearing, human speech, that sort
+of stuff. And how it works is this.
+Basically, we have this formula. This
+was basically uh they they ran a study.
+They collected a lot of data of how
+people perceive audio. And then they fit
+a regression model and that's where
+these coefficients all come from, right?
+They fit a model to it to figure it out.
+And this is what it looks like this
+plot. And so what it says is that notice
+that when you go from 0 to 2500 hertz,
+right? So when you increasing in your
+frequency raw true frequency values in
+the low frequency range we get a pretty
+good a pretty good increase in the
+frequency in the male frequency range.
+On the other hand in higher frequencies
+the same increases so going from 0 to
+2500 led to a 0 to almost750
+increase here. But that same amount of
+increase from like7500
+um to like 20,000 leads to a much
+smaller increase in the male frequency
+range. And why would that be? So let's
+let's take a look.
+This is this is essentially the power
+law of perception. So there's a lot of
+ways to think about it. Let's think
+about it in terms of cars first. If
+you're driving a car at 10 miles an hour
+and you increase by 10 miles an hour, so
+now you're driving at 20 miles an hour,
+you feel like you're going faster,
+right? you're feel because you've
+doubled your speed. So you feel like
+you're actually going faster. On the
+other hand, if you're driving at 60 mph
+and increase by the same 10 miles hour,
+so this is now 70 mph. Going from 60 to
+70 mph doesn't feel like a huge increase
+because it isn't, right? It's it's
+proport it's it's absolute. It's the
+same. You've increased by 10, but
+proportionally it's much less because
+you haven't doubled it. To get that same
+effect, you'd have to go from 60 mph to
+120 mph, right? To double your speed.
+And so this is the power law of
+perception. Okay. So let's see why this
+happens. So what we're going to do first
+is our samples per second. Most
+microphones microphones record at 44100.
+So that's what we're going to use here.
+And then let's do our uh frequency is
+going to be 440.
+Right? So this is I believe it's middle
+C, but either way that's a standard um
+frequency that we'll test right now.
+440.
+duration is going to be uh let's say 10
+seconds of audio. And so then we're
+going to do our t is np do
+a range and it's going to go from
+duration or let's do duration
+times samples
+per second. Right? So that's our times
+um all the times that we need. And then
+we can do our wave form is going to be
+np do sin standard formula from before 2
+* np.pi
+times our um
+t and this will be t / because this is
+just 0 to whatever it needs to be
+divided by the uh our number of samples
+per second. So we get the correct
+indexes. So it goes from zero to however
+many seconds we have. So there we go. T
+times our frequency.
+And so we do plt.plot
+waveform.
+We'll see, you know, this waveform. Not
+very helpful to see that, but we can
+play it back. We can do audio. It'll be
+the waveform. And our rate, our rate is
+going to be the samples per second.
+So you should hear that, right? That's
+our sound. And what we're going to do is
+let's mess with this a little bit. So
+let's set the frequency to be 200 right
+now. So this is our frequency.
+Right? 200. Let's say we increase it by
+200. Let's make it 400.
+Okay. We can hear a pretty good
+difference between those. Now let's do
+the same thing. Let's do 1,000.
+That's 1,000 hertz. But then when we do,
+1200,
+it's not as big of a difference. It
+doesn't feel as big of a difference. And
+let's do another one. Let's do um let's
+do 2500.
+Sorry if it's a little lou. And then
+we'll do 27
+uh00. So, it's a 200 increase.
+It's a very little bit of increase
+because perceptually it doesn't seem
+like much more. And so, this is exactly
+what the MEL frequency, the MEL scale
+does. It it puts less of an increase in
+changes in higher frequencies. And so,
+our first goal is to convert this
+spectrogram here to the mouse scale so
+it's more accurate or closer to how
+human hearing works. Luckily to do that
+is pretty straightforward. We can just
+use the transform from our um from our
+torch audio transforms. The transform is
+going to be t.m melsp spectrogram
+and let's just provide it the sample
+rate is again 16,000 in our audio and
+fft let's just say 1024 doesn't really
+matter. um hop length
+is equal to 512 because before our ml
+spectrogram can be created it first
+needs to create the spectrogram. So
+these are the spectrograms and then we
+have our n mls and then this is the
+number of mal bins that we want to use.
+How are we going to bin these
+frequencies into the different mal
+groups? And that's kind of up to you.
+You can have only up to so many. So you
+can have nmells up to the number of
+frequency bins from the FFT. So the if
+your foria transform gives you 500 uh
+frequency bins, then you can have up to
+500 um MEL bins, but typically we use a
+slightly smaller number to aggregate
+that information a little bit. And so
+let's just do 128 here, right? Again,
+the specifics of how this all happens.
+We'll implement another day. Today's
+just to give you an idea of what's going
+on. And 128 is a pretty typical value we
+use for most um speech models. That's
+where we're going with it. And there's
+actually two different types of MEL
+scales that are slightly different from
+each other. There's Slaney and HTK. Um
+we will we will just use uh Slaney
+today.
+So that's our transform. And so let's go
+ahead. Our MEL spectrogram is just going
+to be the transform on that audio which
+will first compute the uh spectrogram
+and then it will apply the MEL scale to
+it. And then once we have that
+everything else is the same. So we can
+go ahead and copy it in. We're going to
+convert it to decibb, right? And then
+we're going to go ahead and just plot
+it. And we end up with something like
+this. So we get this mel scale. Notice
+that it goes from 100 or 0 to about 128.
+Um, and this is a better representation
+of human speech.
+Let's compare it to earlier. Notice that
+we have a linear increase here. So all
+of our frequency stuff is kind of uh all
+of our frequency information is kind of
+compressed down here because it really
+doesn't go much higher. But we know that
+as we increase in our frequency, we
+should have more emphasis uh or at the
+these changes in the lower frequencies
+should have more emphasis. And that's
+why it's essentially stretching it out a
+little bit more. So your low frequency
+information from here, these changes in
+frequencies should be accentuated,
+right? These these these differences in
+these frequencies should be accentuated
+more. So the male frequency essentially
+just stretches them out a little bit
+more. And that's why we end up with
+something like this. It's just a scaling
+factor. It's nothing um like nothing
+crazy is going on. It's just it's mostly
+just rescaling our frequency axis. But
+that's it. So now that we have our MEL
+spectrogram, the last part is how do we
+go from this back to the audio. So
+remember again to do our inverse foryear
+transform which we did right here.
+inverse transform. We went from the raw
+4year transform, right? We passed in y
+FFT back to our back into the inverse
+for transform and y fft here were
+complex numbers, right? So when we apply
+the for transform, we get both the uh we
+have both the magnitude and the phase
+information incorporated in those
+complex numbers. So that's the key idea.
+The problem is when I mentioned here um
+when we did this spectrogram here we had
+both the magnitude
+and the phase information. So no problem
+here we could totally invert this um
+invert this because this um zxx right
+our our short time for transform has
+complex numbers. So as long as we have
+the magnitude and the phase information
+we can invert it. The main issue is that
+I mentioned how the phase technically is
+not used and we only use the magnitude
+and if you only have the magnitude the
+magnitude plot then there's actually no
+way to invert it not directly at least
+and so we have to use a trick. If we
+only have the magnitude information and
+basically all neural networks or as far
+as I I can tell most neural networks are
+using just the magnitude spectrograms
+then we need to have another trick to
+invert it because we don't have the
+phase that tells us the alignment of
+these different frequencies
+and so if we don't have it we need to
+use a trick and that trick is known as
+the Griffin limb algorithm. And so a a
+clear place you would use this actually
+is a texttospech model. So a texttospech
+model is something where you provide it
+some text and it generates some speech.
+But most model actually not most but a
+lot of models out there are not directly
+generating this raw waveform. What
+they're generating is this MEL
+spectrogram and then given this MEL
+spectrogram we can invert it to the
+speech that we're interested in. So
+that's that's the key idea here. In
+which case if we're doing this then what
+we can do then the problem is how do we
+invert this when we only have the
+magnitude if we only have the magnitude
+mal spectrogram then we have no way to
+invert it because the inverse forear
+transform requires that we have both the
+magnitude and the phase and so this is
+what the Griffin limb algorithm
+overcomes it uses essentially a back and
+forth projection an iterative projection
+method to retrieve the phase of the
+spectrogram uh the the um the procedure
+is that we start with if we don't know
+what the phase of the different
+frequencies are here over time then why
+not just pick a random phase invert the
+STFT with those random phases that
+current phase guess back to the waveform
+and then take the shorttime for
+transform again of that rescale the
+magnitude and then repeat when converge
+again we're going to take a look at a
+little bit of the math and the
+implementation in the future of how we
+actually build this but we're just going
+to basically do a bunch of iterative
+take a for short time for transform take
+an inverse short-time for transform keep
+going over and over again until our
+phases converge. The reason this
+actually works is because again of that
+overlap add method because if I take a
+short time for if I um take a fouryear
+transform of this chunk right here and
+then this second chunk right here and
+we'll end up with this small bit of
+overlap between the two and if we have
+an overlap regardless of how many
+foryear transforms and short-time 4year
+transforms that we take and inverse for
+year transforms no matter no matter how
+many times you go back and forth between
+the time domain and the frequency domain
+these values have to be the same. And so
+it's a constrained optimization
+essentially where we want to basically
+keep um taking the transform the 4A
+transform and the inverse transform over
+and over again and ensure that these
+values end up converging to be the same
+which will only happen when the phases
+align. So that that's kind of a high
+level of why it's working but we'll look
+at that in more detail later on. So for
+us to do this the Griffin limb algorithm
+actually only works directly on the uh
+original spectrogram not the mal scale.
+So we have two steps. We need to take
+the mouse spectrogram. We need to
+unconvert it back to regular
+spectrograms. And then once we have
+regular spectrograms, we can apply the
+Griffin limb algorithm to that to get
+our final result. So let's go ahead and
+just copy the part that's the same from
+before. So we have here our
+waveform. We have our mouse spectrogram
+and we've created our mouse spectrogram.
+Now here is the first takeaway. Let's go
+back up here. And this is going to kind
+of allude back to what we had looked at
+earlier.
+If we look at our um let's see here.
+Let's look at the print.
+Let's just print the magnitude. Print
+magnitude dot actually maybe let's do it
+in the next one where we do it right
+here. Let's print the dbsp spec.shape.
+Notice that the shape here is 513x 275.
+275 is along the time dimensions, but we
+have 513 here. Where did this 513 on
+this spectrogram come from? Well,
+remember this spectrogram used a FFT
+length, the window length of 1024. So
+that means we have 1024 frequency bins
+in every single um chunk, right? Every
+single chunk we have 1024 frequency bins
+that we end up creating.
+The thing is that half of those
+frequency bins are negative frequency
+and the other half are the positive
+frequencies. We typically only care
+about the positive frequencies, which is
+why this has 512 + one for the DC term,
+right? Zero frequency. So we have 512
+plus one, so 513 frequency bins that are
+had because all of the other frequency
+bins that would be on the other half,
+right? They'd keep going in the negative
+direction. They would just be exactly
+the same as this. it just be a
+reflection of the same data just on the
+other half and which is less interesting
+to us, right? We don't really care about
+the negative frequency. So, we just have
+the positive frequencies. And so, that's
+where this 513 comes from. And so, that
+will make more sense why we need that
+right here. So, now that we have this
+mal spectrogram, what we want to do is
+convert this male spectrogram back into
+the original spectrogram. So, how do we
+do that? This going to be inverse mcale
+transform. It's going to be tin inverse
+inverse mouse scale.
+And this is going to need a couple
+pieces of information. First, nftt.
+How many frequency bins are there? Well,
+we have 1024, but we only will be
+computing for the positive ones. So,
+that's going to be 512 + 1, 513. So,
+that's why we have 513 here because we
+only want to keep the positive and the
+zero um the zero frequency term. And
+then, how many mels do we have? Nls.
+Well, we set that ahead of time, right?
+We set 128 mls. So, it just needs to
+know that, oh, the signal coming in has
+128. And then, of course, we provide the
+sample rate is the sample rate. And then
+we provide the mouse scale that we used.
+In this case, we use slaney. So, we're
+going to let it know slain here. And
+this will go ahead and invert our
+spectrogram. So, we're going to go from
+male spectrogram to regular spectrogram.
+It's going to be our uh inverse
+ml scale. MEL scale transform of our MEL
+spectrogram.
+Right? So that's our new that's our
+inverted spectrogram. Nothing crazy. And
+now that we have a spectrogram, notice
+these are magnitudes, right? Values, but
+we have no phase information. So there's
+no way for us to do an actual inverse,
+right? We can't do the inverse shorttime
+for transform. So because we can't do
+that, what we're going to do is go ahead
+and use the Griffin limb algorithm to
+iteratively estimate those phases and
+get the reconstructed waveform. So we're
+going to do Griffin
+limb transform. It's going to be T.
+Griffin
+limb
+n FFT. So how many frequency pins are
+there? We know there's 1024, right?
+That's what we set it to. Hop length is
+going to be uh in this case it's going
+to be uh 512 right we want a 1/2 as we
+said it up here right 512 is our hop
+length
+and then how many iter this is an
+iterative algorithm so how many
+iterations do we want to use let's just
+do 100 for now right basically it'll
+keep going until convergence
+and so now we can finally go ahead and
+do reconstructed waveform is going to be
+the griffin
+limb
+transform
+spectrogram.
+Right? So go ahead and actually apply
+the Griffin limb algorithm to our
+spectrogram and we'll end up with our
+newly reconstructed waveform. And what
+we want to do is see how they compare to
+each other. So I'm going to go ahead and
+plot the visual.
+We had our mouse spectrogram here. We
+have our reconstructed linear
+spectrogram here. Now the problem is
+when going from the male spectrogram to
+the reconstructed linear spectrogram,
+it's not a onetoone mapping because
+remember it was binned together. We may
+have had 512 frequency bins in the
+original spectrogram, right? We can see
+512 here, but because we mapped it to
+128 um MEL bins, we end up losing a
+little bit of information because it's
+not one. multiple frequency bins can be
+mapped to a single Melbin. So when we're
+going the other direction, it may not
+know which frequency bin to map that
+Melbin back to because it's not one to
+one. And so some information could be
+lost here depending on how you set up
+the MEL spectrogram. And then we can go
+ahead and compute our um audio on the
+original on our reconstructed
+spectrogram.
+And to do that, what we're going to do
+is just go ahead and plot it. Audio
+reconstructed
+waveform. And we know the rate is
+16,000.
+And play it back. A distinct promise of
+100 pounds was made to him if he would
+have the child ready to hand over to
+Traval. Okay, it's not bad. It sounds a
+little robotic, right? But we did
+reconstruct something. And this could be
+an artifact of the lack of the one to
+one mapping to go from MEL back to
+linear spectrograms. And also of course
+the the approximation errors from an
+iterative algorithm of going from our
+spectrogram to our um audio itself.
+Let's listen to the original one again.
+Um that was just reg I think I just
+called it audio. So let's just do that.
+A distinct promise of a 100 pounds was
+made to him. That's original audio.
+And so this method is okay but actually
+not all that much used these days. Um
+you're better off using something known
+as a neural vocoder. So neural vocoder.
+So Griffin limb can create a reasonable
+approximation of magnitude spectrograms
+to audio but it's not as good as deep
+learning based methods. So there's a lot
+of deep learning methods out there like
+hi-fi again as one will imple implement
+one day in the future. Um, and in hi-fi
+again, you end up taking basically
+learning a neural network to take a male
+spectrogram and produce the audio
+directly. And these are significantly
+higher quality than something Griffin
+Limb could produce. But either way,
+let's go ahead and just do a summary
+table here just so you can see the flow
+between all the things that we did. So,
+what we normally start with is a
+waveform, right? A wave
+form, right? That's our original data.
+And there's two ways we can process
+this. Either one, we do a 4year
+transform, right? 4year transform. And
+this is going to produce a frequency
+and the waveform is time
+time domain, right? Time domain data.
+And this is going to uh produce
+frequency uh domain
+data, right? Fully frequency. So in this
+case, we've lost all of that temporal
+information. And this is not really a
+pathway we normally take, especially for
+speech processing and audio processing
+for neural networks because we want to
+have a mix of time and frequency domain.
+So let's go ahead and get rid of this
+cuz we're not going to really look at
+it. What we do instead is something
+known as the short time. Let's do it
+here. Short time for your transform,
+which will end up producing something
+known as the spectrogram,
+right? Which is kind of like a picture,
+right? a picture
+of audio, right? Gives you an image of
+the audio essentially. It's a good way
+to think about it. So, we have our short
+time for transform. We give it to a
+spectrogram.
+Now that we have our short time for
+transform and we produce spectrogram, we
+typically for speech, for speech
+specifically, we'll do a MEL scale,
+right? Make it uh closer to human
+perception, right? So for speech and
+human listening and stuff like that, we
+typically convert it to a MEL scale. And
+so you'll end up with a MEL
+spectrogram.
+Unfortunately, this mapping from
+spectrogram to MEL spectrogram is not
+necessarily a one:1 mapping, right? So
+just keep that in mind. Now, how do we
+go back? Well, we can go back from the
+mal spectrogram
+to the spectrogram using an inverse
+mal scale, right? We take an inverse mal
+scale to get back from there to there.
+And the spectrogram assuming this is
+just magnitude, right? Magnitude because
+we don't have the phase information. We
+can approximate the waveform
+using the Griffin
+limb algorithm, right? That's our
+approximation. So, this is an approx.
+And these are kind of the main tools
+you'll be using for speech processing.
+So, it's helpful when working with
+neural networks. There's basically two
+ways. There are more, but the main two
+ways you're going to see going about is
+that either either you're passing raw
+waveforms. So in the wavetovac
+architecture that we'll implement in the
+future, we'll pass it a raw waveform. So
+the model takes raw waveform audio and
+learn something from it. Um other
+architectures like hi-fi again which is
+a vocoder or even whisper um or a lot of
+the TTS models to those you pass
+spectrogram. So instead of passing raw
+waveforms you pass it a spectrogram and
+then it does some type of neural network
+stuff on the spectrogram instead. So
+we're going to be implementing deep
+speech 2 which will be using
+spectrograms. Then we'll be implementing
+waved effect which will be using raw
+audio um all in the future. This is just
+supposed to be a highlevel overview of
+kind of some of the different tools we
+use for audio processing using Torch
+Audio. Um, and so I will see y'all in
+the next
