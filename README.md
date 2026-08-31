@@ -10,7 +10,9 @@
 
 # 画像データ notebook code 
 
-[nutCheck.ipynb](./nutCheck.ipynb)
+- [advanced version : nutCheck.ipynb](./nutCheck.ipynb)
+
+-  [simple version : nutcheck_easy_modifying.ipynb](./nutcheck_easy_modifying.ipynb)
 
 
 # 通常の py コードに変換
@@ -50,3 +52,6 @@
 
         uv run python pure_notes_mel_spectrogram.py C4 G4
 
+
+
+# 画像 nut 
