@@ -25,6 +25,7 @@
             
         jupyter nbconvert --to python toySoundCheck.ipynb
         jupyter nbconvert --to python nutCheck.ipynb
+        uvx --from nbconvert --with jupyter jupyter-nbconvert --to python nutcheck_easy_modifying.ipynb
 
 
         uv run toySoundCheck.py 
