@@ -52,6 +52,3 @@
 
         uv run python pure_notes_mel_spectrogram.py C4 G4
 
-
-
-# 画像 nut 
