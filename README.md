@@ -30,6 +30,7 @@
 
         uv run toySoundCheck.py 
         uv run nutCheck.py
+        uv run nutcheck_easy_modifying.py
 
 # [show_mel_spectrogram.py](./show_mel_spectrogram.py) mel 
 
