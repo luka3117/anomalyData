@@ -39,6 +39,8 @@ https://www.youtube.com/watch?v=TUkU3dDCn04
 =====
 
 
+https://www.youtube.com/watch?v=tAev_CGqgVs
+
 mvtec data source page
 https://www.mvtec.com/research-teaching/datasets/mvtec-loco-ad
 
