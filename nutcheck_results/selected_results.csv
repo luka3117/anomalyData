@@ -1,0 +1,6 @@
+file,path,source_type,y_true,true_status,anomaly_score,threshold,y_pred,pred_status,correct,figure_file
+007.png,/Users/jc/Dropbox/dplyr-tutorial-master/GSDS/lecture_jct/lecture_slides/data/hazelnut/hazelnutData/test/good/007.png,good,0,normal,0.00040548676,0.000786,0,normal,True,good_007_result.png
+003.png,/Users/jc/Dropbox/dplyr-tutorial-master/GSDS/lecture_jct/lecture_slides/data/hazelnut/hazelnutData/test/crack/003.png,crack,1,anomaly,0.00029446365,0.000786,0,normal,False,crack_003_result.png
+005.png,/Users/jc/Dropbox/dplyr-tutorial-master/GSDS/lecture_jct/lecture_slides/data/hazelnut/hazelnutData/test/hole/005.png,hole,1,anomaly,0.00045901907,0.000786,0,normal,False,hole_005_result.png
+000.png,/Users/jc/Dropbox/dplyr-tutorial-master/GSDS/lecture_jct/lecture_slides/data/hazelnut/hazelnutData/test/print/000.png,print,1,anomaly,0.0032217212,0.000786,1,anomaly,True,print_000_result.png
+002.png,/Users/jc/Dropbox/dplyr-tutorial-master/GSDS/lecture_jct/lecture_slides/data/hazelnut/hazelnutData/test/print/002.png,print,1,anomaly,0.0030092192,0.000786,1,anomaly,True,print_002_result.png
