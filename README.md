@@ -120,31 +120,32 @@ nutcheck_apply_selected.py
 となります。
 
 ---
+## Notebook と Python スクリプトの変換
 
-## Notebook を Python スクリプトに変換
+Notebook（`.ipynb`）と Python スクリプト（`.py`）は相互に変換できます。
 
-Notebook（`.ipynb`）は、通常の Python スクリプト（`.py`）に変換して実行することもできます。
+### Notebook → Python
 
-変換済みの例：
-
-* [toySoundCheck.py](toySoundCheck.py)
-* [nutCheck.py](./nutCheck.py)
-
-通常の Jupyter 環境では、次のように変換できます。
+通常の Jupyter 環境では：
 
 ```bash
 jupyter nbconvert --to python toySoundCheck.ipynb
 jupyter nbconvert --to python nutCheck.ipynb
 ```
 
-`uv` を利用する場合は、例えば次のように実行できます。
+`uv` を利用する場合：
 
 ```bash
 uvx --from nbconvert --with jupyter \
   jupyter-nbconvert --to python nutcheck_easy_modifying.ipynb
 ```
 
-変換した Python スクリプトは、
+変換済みの例：
+
+* [toySoundCheck.py](toySoundCheck.py)
+* [nutCheck.py](./nutCheck.py)
+
+変換した Python スクリプトは、例えば次のように実行できます。
 
 ```bash
 uv run toySoundCheck.py
@@ -152,9 +153,7 @@ uv run nutCheck.py
 uv run nutcheck_easy_modifying.py
 ```
 
-のように実行できます。
-
-講義後半で使用するコードについては、
+講義後半で使用する画像異常検知コードは、
 
 ```bash
 uv run nutcheck_easy_clean_jp.py
@@ -166,7 +165,47 @@ uv run nutcheck_easy_clean_jp.py
 uv run nutcheck_apply_selected.py
 ```
 
-で学習済みモデルを別の画像に適用できます。
+で保存済みの学習済みモデルを別の画像に適用できます。
+
+---
+
+### Python → Notebook
+
+Python スクリプトを Notebook に変換する場合は `jupytext` を利用できます。
+
+```bash
+uv run --with jupytext \
+  jupytext --to notebook toySoundCheck_final.py
+```
+
+実行すると、通常は同じフォルダに
+
+```text
+toySoundCheck_final.ipynb
+```
+
+が作成されます。
+
+変換した Notebook は、例えば次のように起動できます。
+
+```bash
+uv run --with jupyter \
+  jupyter lab toySoundCheck_final.ipynb
+```
+
+必要なライブラリも同時に準備して起動する場合：
+
+```bash
+uv run \
+  --with jupyter \
+  --with librosa \
+  --with scikit-learn \
+  --with matplotlib \
+  --with pandas \
+  --with tqdm \
+  jupyter lab toySoundCheck_final.ipynb
+```
+
 
 ---
 
