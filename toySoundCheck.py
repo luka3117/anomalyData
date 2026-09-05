@@ -109,7 +109,8 @@ print("テストフォルダ:", TEST_DIR)
 # - テストデータ：正常音と異常音
 
 
-TARGET_ID = "id_04"
+# TARGET_ID = "id_04"
+TARGET_ID = "id_02"
 
 train_files = sorted(
     str(path) for path in TRAIN_DIR.glob(f"normal_{TARGET_ID}_*.wav")
@@ -261,6 +262,26 @@ print(classification_report(y_test, svm_pred, target_names=["normal", "anomaly"]
 # In[19]:
 
 
+# def plot_score_distribution(normal_score, anomaly_score, threshold, title):
+#     upper = np.percentile(np.r_[normal_score, anomaly_score], 99)
+#     bins = np.linspace(0, upper, 30)
+
+#     plt.figure(figsize=(6, 3))
+#     plt.hist(normal_score, bins=bins, alpha=0.6, label="normal")
+#     plt.hist(anomaly_score, bins=bins, alpha=0.6, label="anomaly")
+#     plt.axvline(threshold, linestyle="--", label="threshold")
+#     plt.title(title)
+#     plt.xlabel("anomaly score")
+#     plt.ylabel("count")
+#     plt.legend()
+#     plt.show()
+
+
+# plot_score_distribution(test_pca_score[y_test == 0], test_pca_score[y_test == 1], pca_threshold, "PCA")
+# plot_score_distribution(test_knn_score[y_test == 0], test_knn_score[y_test == 1], knn_threshold, "kNN")
+# plot_score_distribution(test_svm_score[y_test == 0], test_svm_score[y_test == 1], svm_threshold, "One-Class SVM")
+
+
 def plot_score_distribution(normal_score, anomaly_score, threshold, title):
     upper = np.percentile(np.r_[normal_score, anomaly_score], 99)
     bins = np.linspace(0, upper, 30)
@@ -273,9 +294,15 @@ def plot_score_distribution(normal_score, anomaly_score, threshold, title):
     plt.xlabel("anomaly score")
     plt.ylabel("count")
     plt.legend()
-    plt.show()
+    
+    # title（例: "One-Class SVM"）からファイル名（"one-class_svm.png"）を自動生成
+    filename = f"{title.lower().replace(' ', '_')}.png"
+    plt.savefig(filename, dpi=300, bbox_inches="tight")
+    
+    # plt.show()
+    plt.close()
 
-
+# 呼び出し側は元のままで変更不要です
 plot_score_distribution(test_pca_score[y_test == 0], test_pca_score[y_test == 1], pca_threshold, "PCA")
 plot_score_distribution(test_knn_score[y_test == 0], test_knn_score[y_test == 1], knn_threshold, "kNN")
 plot_score_distribution(test_svm_score[y_test == 0], test_svm_score[y_test == 1], svm_threshold, "One-Class SVM")

@@ -1,11 +1,13 @@
 
-# 音声データ notebook code 
 
 
-[toySoundCheck.ipynb](toySoundCheck.ipynb)
+# 音声データ(toy car data) code 
 
-        
-    
+- [toySoundCheck.ipynb](toySoundCheck.ipynb)
+
+- [script version : toySoundCheck_final.py](toySoundCheck_final.py)
+
+
 
 
 # 画像データ notebook code 
